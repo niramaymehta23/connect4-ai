@@ -52,26 +52,19 @@ else:
     try:
         import torch
 
-        from src.game.rules import valid_cols
         from src.nn.encode import encode_board
         from src.nn.network import Connect4Net
+        from src.nn.scoring import score_successors
+        from src.nn.self_play import make_nn_mcts_bot
 
         _device = torch.device("cpu")
         _neural_model = Connect4Net.load(MODEL_PATH, _device)
 
         def _neural_scores(board, token):
-            scores = [None] * 7
-            for col in valid_cols(board):
-                from src.game.board import place, unplace
-
-                row = place(board, col, token)
-                if row == -1:
-                    continue
+            def value(position, player):
                 with torch.no_grad():
-                    value = _neural_model(encode_board(board, token).unsqueeze(0).to(_device))
-                unplace(board, col)
-                scores[col] = float(value.item())
-            return scores
+                    return _neural_model(encode_board(position, player).unsqueeze(0).to(_device)).item()
+            return score_successors(board, token, value)
 
         def _neural_bot(board, token):
             scores = _neural_scores(board, token)
@@ -79,9 +72,10 @@ else:
             return max(valid, key=lambda item: item[1])[0]
 
         BOT_SPECS["neural_scores"] = _neural_scores
-        _register("neural", "NEXUS (Neural Network)", _neural_bot, kind="neural")
+        _register("neural", "Neural value (one move ahead)", _neural_bot, kind="neural")
+        _register("neural_mcts", "Neural + MCTS (200 simulations)",
+                  make_nn_mcts_bot(_neural_model, _device, iterations=200), kind="flat")
     except ImportError:
         _register("neural", "NEXUS (Neural Network)", reason="requires torch", kind="neural")
     except Exception as exc:
         _register("neural", "NEXUS (Neural Network)", reason=f"failed to load model: {exc}", kind="neural")
-

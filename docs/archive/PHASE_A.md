@@ -1,5 +1,7 @@
 # Phase A — Evolutionary Weight Tuning
 
+> Historical design notes; see ../GUIDE.md for the current learning path.
+
 ## What we are optimising
 
 The minimax heuristic scorer has several tunable parameters:

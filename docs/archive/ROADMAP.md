@@ -1,5 +1,7 @@
 # Roadmap
 
+> Archived roadmap; see ../GUIDE.md for current limitations and next experiments.
+
 ## Phase A — Evolutionary weight tuning (start here)
 
 ### A1 — Core foundation

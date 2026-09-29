@@ -1,7 +1,7 @@
 {
   "name": "connect4-ai",
   "version": "0.1.0",
-  "description": "Evolutionary training system for Connect 4 AI",
+  "description": "Archived JavaScript manifest; scripts no longer exist. Use the root README's Python commands.",
   "type": "module",
   "scripts": {
     "train":     "node scripts/train.js",

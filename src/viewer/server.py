@@ -62,7 +62,7 @@ def _scores_for(bot_id, board, token):
         return _minimax_scores(board, token)
     if kind == "neural":
         return _neural_scores(board, token)
-    return [1.0] * 7
+    return None  # Search visit statistics are not exposed by these agents yet.
 
 
 @app.route("/api/move", methods=["POST"])

@@ -20,3 +20,27 @@ data/metrics/nn_fitness_chart.png
 
 # Claude settings
 .claude/
+# Other local environments and frontend dependencies
+venv/
+env/
+node_modules/
+
+# Test/build caches
+.pytest_cache/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+.secrets/
+
+# Reproducible local runs and browser checks
+runs/
+output/
+training.log
+*~
+progress.md

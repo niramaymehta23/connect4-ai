@@ -1,5 +1,7 @@
 # Architecture
 
+> Historical plan, including obsolete JavaScript references. See ../GUIDE.md.
+
 ## Core principle
 
 Game logic, bot logic, training logic, and visualisation are completely separate.

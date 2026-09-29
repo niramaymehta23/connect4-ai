@@ -1,5 +1,7 @@
 # Project Update Log — Connect4 AI
 
+> Historical development log. Claims here require fresh controlled evaluation.
+
 Running record of every major change, decision, and result across the project.
 Updated after every significant milestone or architectural decision.
 

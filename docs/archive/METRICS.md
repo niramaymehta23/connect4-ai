@@ -1,5 +1,7 @@
 # Metrics — What We Measure and Why
 
+> Historical metrics specification; current evaluation is documented in ../GUIDE.md.
+
 ## Per-game metrics (simulation runner)
 
 | Metric | Why it matters |

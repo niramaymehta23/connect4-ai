@@ -1,5 +1,7 @@
 # Phase C — Monte Carlo Tree Search (MCTS)
 
+> Historical design notes; see ../GUIDE.md for the current learning path.
+
 ## Why MCTS after Phase A
 
 Phase A optimises weights for a fixed heuristic. MCTS eliminates the

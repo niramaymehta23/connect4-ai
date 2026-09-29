@@ -161,9 +161,13 @@ function renderBoard() {
 
 function renderHeatmap(scores = null) {
   els.heatmap.innerHTML = "";
-  const usableScores = scores || Array(COLS).fill(1);
+  const usableScores = scores || Array(COLS).fill(null);
+  document.getElementById('score-caption').textContent = scores
+    ? 'One-move estimates, not win probabilities'
+    : 'Scores unavailable for this agent';
   const numeric = usableScores.filter((value) => value !== null);
   const maxScore = numeric.length ? Math.max(...numeric) : 1;
+  const minScore = numeric.length ? Math.min(...numeric) : 0;
   const uniform = numeric.length && numeric.every((value) => value === numeric[0]);
 
   usableScores.forEach((score) => {
@@ -175,7 +179,7 @@ function renderHeatmap(scores = null) {
     if (score === null) {
       cell.style.background = "#424242";
     } else {
-      const normalized = maxScore > 0 ? Math.max(0, score) / maxScore : 0;
+      const normalized = maxScore > minScore ? (score - minScore) / (maxScore - minScore) : 0;
       const intensity = uniform ? 0.2 : Math.max(0.08, normalized);
       const r = Math.round(20  + 220 * intensity);
       const g = Math.round(40  + 152 * intensity);
@@ -491,3 +495,17 @@ async function boot() {
 boot().catch((error) => {
   els.statusText.textContent = `Failed to load viewer: ${error.message}`;
 });
+
+window.render_game_to_text = () => JSON.stringify({
+  mode: state.mode,
+  board: state.board,
+  coordinates: 'row 0 top; columns 0..6 left to right; 0 empty, 2 red, 1 yellow',
+  currentToken: state.currentToken,
+  moveCount: state.moveCount,
+  gameOver: state.gameOver,
+  thinking: state.botThinking,
+  botA: state.botAId,
+  botB: state.botBId,
+});
+// Turn-based game: server responses and clicks advance play, not elapsed time.
+window.advanceTime = async () => {};

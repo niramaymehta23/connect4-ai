@@ -37,7 +37,7 @@ def _opp(token):
     return HUMAN if token == AI else AI
 
 
-def _run_nn_mcts(board, token, network, device, iterations, C=1.414):
+def _run_nn_mcts(board, token, network, device, iterations, C=1.414, temperature=0.0):
     """
     Run MCTS from position `board` with `token` to move, using `network` as
     the leaf evaluator instead of random rollouts.
@@ -55,6 +55,8 @@ def _run_nn_mcts(board, token, network, device, iterations, C=1.414):
     -------
     int — chosen column index
     """
+    if iterations < 1 or temperature < 0:
+        raise ValueError("iterations must be positive and temperature nonnegative")
     root = MCTSNode(clone(board), None, None, token)
 
     for _ in range(iterations):
@@ -95,14 +97,20 @@ def _run_nn_mcts(board, token, network, device, iterations, C=1.414):
 
     if not root.children:
         return random.choice(valid_cols(board))
-    return max(root.children, key=lambda n: n.visits).move
+    if temperature == 0:
+        return max(root.children, key=lambda n: n.visits).move
+    # Exploration during training: sample proportional to visits^(1 / T).
+    # Dividing by max visits keeps powers bounded without changing probabilities.
+    peak = max(child.visits for child in root.children)
+    weights = [(child.visits / peak) ** (1.0 / temperature) for child in root.children]
+    return random.choices(root.children, weights=weights, k=1)[0].move
 
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
-def generate_games(network, device, n_games, mcts_iterations):
+def generate_games(network, device, n_games, mcts_iterations, exploration_plies=8):
     """
     Play `n_games` self-play games using network-backed MCTS for every move.
 
@@ -132,7 +140,10 @@ def generate_games(network, device, n_games, mcts_iterations):
             # player evaluated when deciding.
             history.append((encode_board(board, current), current))
 
-            col = _run_nn_mcts(board, current, network, device, mcts_iterations)
+            col = _run_nn_mcts(
+                board, current, network, device, mcts_iterations,
+                temperature=1.0 if len(history) <= exploration_plies else 0.0,
+            )
             place(board, col, current)
 
             if check_win(board, current):

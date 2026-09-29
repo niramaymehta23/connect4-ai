@@ -77,6 +77,6 @@ class Connect4Net(nn.Module):
     def load(cls, path, device):
         """Load state dict from `path`, return network in eval mode on `device`."""
         net = cls().to(device)
-        net.load_state_dict(torch.load(path, map_location=device))
+        net.load_state_dict(torch.load(path, map_location=device, weights_only=True))
         net.eval()
         return net

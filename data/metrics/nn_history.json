@@ -2598,5 +2598,1285 @@
     "wall_clock_ms": 170791,
     "eval_win_rate": 0.76,
     "champion_updated": true
+  },
+  {
+    "iteration": 261,
+    "timestamp": "2026-03-27T01:12:38Z",
+    "loss": 0.525326,
+    "buffer_size": 1566,
+    "games_played": 13050,
+    "wall_clock_ms": 227644,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 262,
+    "timestamp": "2026-03-27T01:14:37Z",
+    "loss": 0.391261,
+    "buffer_size": 2319,
+    "games_played": 13100,
+    "wall_clock_ms": 118419,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 263,
+    "timestamp": "2026-03-27T01:16:08Z",
+    "loss": 0.347394,
+    "buffer_size": 2886,
+    "games_played": 13150,
+    "wall_clock_ms": 91218,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 264,
+    "timestamp": "2026-03-27T01:18:54Z",
+    "loss": 0.481281,
+    "buffer_size": 3968,
+    "games_played": 13200,
+    "wall_clock_ms": 166251,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 265,
+    "timestamp": "2026-03-27T01:22:16Z",
+    "loss": 0.380943,
+    "buffer_size": 5290,
+    "games_played": 13250,
+    "wall_clock_ms": 202216,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 266,
+    "timestamp": "2026-03-27T01:28:07Z",
+    "loss": 0.459319,
+    "buffer_size": 1606,
+    "games_played": 13300,
+    "wall_clock_ms": 234673,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 267,
+    "timestamp": "2026-03-27T01:31:06Z",
+    "loss": 0.362047,
+    "buffer_size": 2806,
+    "games_played": 13350,
+    "wall_clock_ms": 179821,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 268,
+    "timestamp": "2026-03-27T01:33:47Z",
+    "loss": 0.437524,
+    "buffer_size": 3833,
+    "games_played": 13400,
+    "wall_clock_ms": 160811,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 269,
+    "timestamp": "2026-03-27T01:36:14Z",
+    "loss": 0.427004,
+    "buffer_size": 4833,
+    "games_played": 13450,
+    "wall_clock_ms": 147059,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 270,
+    "timestamp": "2026-03-27T01:40:19Z",
+    "loss": 0.586741,
+    "buffer_size": 6529,
+    "games_played": 13500,
+    "wall_clock_ms": 245106,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 271,
+    "timestamp": "2026-03-27T01:44:13Z",
+    "loss": 0.400542,
+    "buffer_size": 8103,
+    "games_played": 13550,
+    "wall_clock_ms": 233931,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 272,
+    "timestamp": "2026-03-27T01:47:40Z",
+    "loss": 0.500461,
+    "buffer_size": 9509,
+    "games_played": 13600,
+    "wall_clock_ms": 206420,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 273,
+    "timestamp": "2026-03-27T01:51:20Z",
+    "loss": 0.512918,
+    "buffer_size": 11039,
+    "games_played": 13650,
+    "wall_clock_ms": 220650,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 274,
+    "timestamp": "2026-03-27T01:54:40Z",
+    "loss": 0.476838,
+    "buffer_size": 12364,
+    "games_played": 13700,
+    "wall_clock_ms": 199630,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 275,
+    "timestamp": "2026-03-27T01:57:24Z",
+    "loss": 0.45708,
+    "buffer_size": 13455,
+    "games_played": 13750,
+    "wall_clock_ms": 164343,
+    "eval_win_rate": 0.64,
+    "champion_updated": true
+  },
+  {
+    "iteration": 276,
+    "timestamp": "2026-03-27T02:03:49Z",
+    "loss": 0.490177,
+    "buffer_size": 14823,
+    "games_played": 13800,
+    "wall_clock_ms": 202246,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 277,
+    "timestamp": "2026-03-27T02:07:25Z",
+    "loss": 0.432117,
+    "buffer_size": 16259,
+    "games_played": 13850,
+    "wall_clock_ms": 215641,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 278,
+    "timestamp": "2026-03-27T02:08:44Z",
+    "loss": 0.443531,
+    "buffer_size": 16769,
+    "games_played": 13900,
+    "wall_clock_ms": 79415,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 279,
+    "timestamp": "2026-03-27T02:10:22Z",
+    "loss": 0.431375,
+    "buffer_size": 17398,
+    "games_played": 13950,
+    "wall_clock_ms": 97490,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 280,
+    "timestamp": "2026-03-27T02:11:50Z",
+    "loss": 0.484531,
+    "buffer_size": 17969,
+    "games_played": 14000,
+    "wall_clock_ms": 87853,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 281,
+    "timestamp": "2026-03-27T02:14:15Z",
+    "loss": 0.439249,
+    "buffer_size": 18887,
+    "games_played": 14050,
+    "wall_clock_ms": 145517,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 282,
+    "timestamp": "2026-03-27T02:16:47Z",
+    "loss": 0.475535,
+    "buffer_size": 19859,
+    "games_played": 14100,
+    "wall_clock_ms": 151733,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 283,
+    "timestamp": "2026-03-27T02:19:10Z",
+    "loss": 0.503016,
+    "buffer_size": 20765,
+    "games_played": 14150,
+    "wall_clock_ms": 143253,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 284,
+    "timestamp": "2026-03-27T02:21:38Z",
+    "loss": 0.462625,
+    "buffer_size": 21697,
+    "games_played": 14200,
+    "wall_clock_ms": 148281,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 285,
+    "timestamp": "2026-03-27T02:24:07Z",
+    "loss": 0.535193,
+    "buffer_size": 22635,
+    "games_played": 14250,
+    "wall_clock_ms": 148691,
+    "eval_win_rate": 0.64,
+    "champion_updated": true
+  },
+  {
+    "iteration": 286,
+    "timestamp": "2026-03-27T02:29:31Z",
+    "loss": 0.461792,
+    "buffer_size": 23577,
+    "games_played": 14300,
+    "wall_clock_ms": 150958,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 287,
+    "timestamp": "2026-03-27T02:31:59Z",
+    "loss": 0.444749,
+    "buffer_size": 24509,
+    "games_played": 14350,
+    "wall_clock_ms": 147956,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 288,
+    "timestamp": "2026-03-27T02:34:21Z",
+    "loss": 0.371025,
+    "buffer_size": 25405,
+    "games_played": 14400,
+    "wall_clock_ms": 141740,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 289,
+    "timestamp": "2026-03-27T02:36:58Z",
+    "loss": 0.479388,
+    "buffer_size": 26400,
+    "games_played": 14450,
+    "wall_clock_ms": 156854,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 290,
+    "timestamp": "2026-03-27T02:39:27Z",
+    "loss": 0.415717,
+    "buffer_size": 27356,
+    "games_played": 14500,
+    "wall_clock_ms": 149734,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 291,
+    "timestamp": "2026-03-27T02:42:18Z",
+    "loss": 0.467702,
+    "buffer_size": 28473,
+    "games_played": 14550,
+    "wall_clock_ms": 170439,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 292,
+    "timestamp": "2026-03-27T02:44:58Z",
+    "loss": 0.472004,
+    "buffer_size": 29485,
+    "games_played": 14600,
+    "wall_clock_ms": 159761,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 293,
+    "timestamp": "2026-03-27T02:47:25Z",
+    "loss": 0.419939,
+    "buffer_size": 30413,
+    "games_played": 14650,
+    "wall_clock_ms": 147168,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 294,
+    "timestamp": "2026-03-27T02:49:59Z",
+    "loss": 0.412254,
+    "buffer_size": 31395,
+    "games_played": 14700,
+    "wall_clock_ms": 154353,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 295,
+    "timestamp": "2026-03-27T02:52:25Z",
+    "loss": 0.345066,
+    "buffer_size": 32307,
+    "games_played": 14750,
+    "wall_clock_ms": 145870,
+    "eval_win_rate": 0.44,
+    "champion_updated": false
+  },
+  {
+    "iteration": 296,
+    "timestamp": "2026-03-27T02:57:22Z",
+    "loss": 0.405887,
+    "buffer_size": 33173,
+    "games_played": 14800,
+    "wall_clock_ms": 137031,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 297,
+    "timestamp": "2026-03-27T02:59:50Z",
+    "loss": 0.358505,
+    "buffer_size": 34097,
+    "games_played": 14850,
+    "wall_clock_ms": 147353,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 298,
+    "timestamp": "2026-03-27T03:02:21Z",
+    "loss": 0.408476,
+    "buffer_size": 35047,
+    "games_played": 14900,
+    "wall_clock_ms": 151197,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 299,
+    "timestamp": "2026-03-27T03:04:52Z",
+    "loss": 0.386162,
+    "buffer_size": 35995,
+    "games_played": 14950,
+    "wall_clock_ms": 151192,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 300,
+    "timestamp": "2026-03-27T03:07:25Z",
+    "loss": 0.363917,
+    "buffer_size": 36969,
+    "games_played": 15000,
+    "wall_clock_ms": 153012,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 301,
+    "timestamp": "2026-03-27T03:10:07Z",
+    "loss": 0.348254,
+    "buffer_size": 38022,
+    "games_played": 15050,
+    "wall_clock_ms": 161962,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 302,
+    "timestamp": "2026-03-27T03:12:20Z",
+    "loss": 0.360517,
+    "buffer_size": 38861,
+    "games_played": 15100,
+    "wall_clock_ms": 132986,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 303,
+    "timestamp": "2026-03-27T03:14:44Z",
+    "loss": 0.383131,
+    "buffer_size": 39763,
+    "games_played": 15150,
+    "wall_clock_ms": 143412,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 304,
+    "timestamp": "2026-03-27T03:17:26Z",
+    "loss": 0.379223,
+    "buffer_size": 40822,
+    "games_played": 15200,
+    "wall_clock_ms": 162225,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 305,
+    "timestamp": "2026-03-27T03:19:55Z",
+    "loss": 0.3253,
+    "buffer_size": 41764,
+    "games_played": 15250,
+    "wall_clock_ms": 149698,
+    "eval_win_rate": 0.48,
+    "champion_updated": false
+  },
+  {
+    "iteration": 306,
+    "timestamp": "2026-03-27T03:25:10Z",
+    "loss": 0.308042,
+    "buffer_size": 42760,
+    "games_played": 15300,
+    "wall_clock_ms": 154946,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 307,
+    "timestamp": "2026-03-27T03:27:45Z",
+    "loss": 0.325754,
+    "buffer_size": 43753,
+    "games_played": 15350,
+    "wall_clock_ms": 154921,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 308,
+    "timestamp": "2026-03-27T03:30:32Z",
+    "loss": 0.345871,
+    "buffer_size": 44849,
+    "games_played": 15400,
+    "wall_clock_ms": 167588,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 309,
+    "timestamp": "2026-03-27T03:33:50Z",
+    "loss": 0.375123,
+    "buffer_size": 46227,
+    "games_played": 15450,
+    "wall_clock_ms": 197677,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 310,
+    "timestamp": "2026-03-27T03:37:33Z",
+    "loss": 0.389612,
+    "buffer_size": 47789,
+    "games_played": 15500,
+    "wall_clock_ms": 223315,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 311,
+    "timestamp": "2026-03-27T03:40:44Z",
+    "loss": 0.433449,
+    "buffer_size": 49087,
+    "games_played": 15550,
+    "wall_clock_ms": 190544,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 312,
+    "timestamp": "2026-03-27T03:44:48Z",
+    "loss": 0.327932,
+    "buffer_size": 50000,
+    "games_played": 15600,
+    "wall_clock_ms": 244254,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 313,
+    "timestamp": "2026-03-27T03:48:40Z",
+    "loss": 0.439282,
+    "buffer_size": 50000,
+    "games_played": 15650,
+    "wall_clock_ms": 232073,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 314,
+    "timestamp": "2026-03-27T03:51:24Z",
+    "loss": 0.336757,
+    "buffer_size": 50000,
+    "games_played": 15700,
+    "wall_clock_ms": 163642,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 315,
+    "timestamp": "2026-03-27T03:55:28Z",
+    "loss": 0.391903,
+    "buffer_size": 50000,
+    "games_played": 15750,
+    "wall_clock_ms": 244391,
+    "eval_win_rate": 0.54,
+    "champion_updated": false
+  },
+  {
+    "iteration": 316,
+    "timestamp": "2026-03-27T04:02:13Z",
+    "loss": 0.340211,
+    "buffer_size": 50000,
+    "games_played": 15800,
+    "wall_clock_ms": 194940,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 317,
+    "timestamp": "2026-03-27T04:06:52Z",
+    "loss": 0.246999,
+    "buffer_size": 50000,
+    "games_played": 15850,
+    "wall_clock_ms": 279331,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 318,
+    "timestamp": "2026-03-27T04:10:05Z",
+    "loss": 0.285431,
+    "buffer_size": 50000,
+    "games_played": 15900,
+    "wall_clock_ms": 192332,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 319,
+    "timestamp": "2026-03-27T04:14:21Z",
+    "loss": 0.239232,
+    "buffer_size": 50000,
+    "games_played": 15950,
+    "wall_clock_ms": 256691,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 320,
+    "timestamp": "2026-03-27T04:17:30Z",
+    "loss": 0.249064,
+    "buffer_size": 50000,
+    "games_played": 16000,
+    "wall_clock_ms": 188549,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 321,
+    "timestamp": "2026-03-27T04:20:40Z",
+    "loss": 0.243862,
+    "buffer_size": 50000,
+    "games_played": 16050,
+    "wall_clock_ms": 190148,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 322,
+    "timestamp": "2026-03-27T04:22:40Z",
+    "loss": 0.143173,
+    "buffer_size": 50000,
+    "games_played": 16100,
+    "wall_clock_ms": 119854,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 323,
+    "timestamp": "2026-03-27T04:26:10Z",
+    "loss": 0.212356,
+    "buffer_size": 50000,
+    "games_played": 16150,
+    "wall_clock_ms": 210439,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 324,
+    "timestamp": "2026-03-27T04:29:33Z",
+    "loss": 0.175503,
+    "buffer_size": 50000,
+    "games_played": 16200,
+    "wall_clock_ms": 202758,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 325,
+    "timestamp": "2026-03-27T04:32:58Z",
+    "loss": 0.214777,
+    "buffer_size": 50000,
+    "games_played": 16250,
+    "wall_clock_ms": 204447,
+    "eval_win_rate": 0.66,
+    "champion_updated": true
+  },
+  {
+    "iteration": 326,
+    "timestamp": "2026-03-27T04:40:33Z",
+    "loss": 0.173294,
+    "buffer_size": 50000,
+    "games_played": 16300,
+    "wall_clock_ms": 249277,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 327,
+    "timestamp": "2026-03-27T04:43:41Z",
+    "loss": 0.190792,
+    "buffer_size": 50000,
+    "games_played": 16350,
+    "wall_clock_ms": 188630,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 328,
+    "timestamp": "2026-03-27T04:46:44Z",
+    "loss": 0.161072,
+    "buffer_size": 50000,
+    "games_played": 16400,
+    "wall_clock_ms": 182344,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 329,
+    "timestamp": "2026-03-27T04:49:51Z",
+    "loss": 0.292483,
+    "buffer_size": 50000,
+    "games_played": 16450,
+    "wall_clock_ms": 187657,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 330,
+    "timestamp": "2026-03-27T04:51:36Z",
+    "loss": 0.198938,
+    "buffer_size": 50000,
+    "games_played": 16500,
+    "wall_clock_ms": 104477,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 331,
+    "timestamp": "2026-03-27T04:54:33Z",
+    "loss": 0.276959,
+    "buffer_size": 50000,
+    "games_played": 16550,
+    "wall_clock_ms": 177231,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 332,
+    "timestamp": "2026-03-27T04:57:31Z",
+    "loss": 0.217394,
+    "buffer_size": 50000,
+    "games_played": 16600,
+    "wall_clock_ms": 178401,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 333,
+    "timestamp": "2026-03-27T05:00:32Z",
+    "loss": 0.245636,
+    "buffer_size": 50000,
+    "games_played": 16650,
+    "wall_clock_ms": 180579,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 334,
+    "timestamp": "2026-03-27T05:03:57Z",
+    "loss": 0.294163,
+    "buffer_size": 50000,
+    "games_played": 16700,
+    "wall_clock_ms": 205101,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 335,
+    "timestamp": "2026-03-27T05:07:32Z",
+    "loss": 0.208582,
+    "buffer_size": 50000,
+    "games_played": 16750,
+    "wall_clock_ms": 215405,
+    "eval_win_rate": 0.46,
+    "champion_updated": false
+  },
+  {
+    "iteration": 336,
+    "timestamp": "2026-03-27T05:14:39Z",
+    "loss": 0.293825,
+    "buffer_size": 50000,
+    "games_played": 16800,
+    "wall_clock_ms": 195674,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 337,
+    "timestamp": "2026-03-27T05:17:44Z",
+    "loss": 0.299859,
+    "buffer_size": 50000,
+    "games_played": 16850,
+    "wall_clock_ms": 184817,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 338,
+    "timestamp": "2026-03-27T05:20:36Z",
+    "loss": 0.330626,
+    "buffer_size": 50000,
+    "games_played": 16900,
+    "wall_clock_ms": 172476,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 339,
+    "timestamp": "2026-03-27T05:22:43Z",
+    "loss": 0.254805,
+    "buffer_size": 50000,
+    "games_played": 16950,
+    "wall_clock_ms": 127007,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 340,
+    "timestamp": "2026-03-27T05:26:09Z",
+    "loss": 0.270692,
+    "buffer_size": 50000,
+    "games_played": 17000,
+    "wall_clock_ms": 206022,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 341,
+    "timestamp": "2026-03-27T05:28:51Z",
+    "loss": 0.228532,
+    "buffer_size": 50000,
+    "games_played": 17050,
+    "wall_clock_ms": 162374,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 342,
+    "timestamp": "2026-03-27T05:31:52Z",
+    "loss": 0.317959,
+    "buffer_size": 50000,
+    "games_played": 17100,
+    "wall_clock_ms": 180936,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 343,
+    "timestamp": "2026-03-27T05:34:48Z",
+    "loss": 0.289725,
+    "buffer_size": 50000,
+    "games_played": 17150,
+    "wall_clock_ms": 176078,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 344,
+    "timestamp": "2026-03-27T05:38:17Z",
+    "loss": 0.331505,
+    "buffer_size": 50000,
+    "games_played": 17200,
+    "wall_clock_ms": 208113,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 345,
+    "timestamp": "2026-03-27T05:42:28Z",
+    "loss": 0.346784,
+    "buffer_size": 50000,
+    "games_played": 17250,
+    "wall_clock_ms": 251673,
+    "eval_win_rate": 0.76,
+    "champion_updated": true
+  },
+  {
+    "iteration": 346,
+    "timestamp": "2026-03-27T05:49:18Z",
+    "loss": 0.371665,
+    "buffer_size": 50000,
+    "games_played": 17300,
+    "wall_clock_ms": 217931,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 347,
+    "timestamp": "2026-03-27T05:52:55Z",
+    "loss": 0.325981,
+    "buffer_size": 50000,
+    "games_played": 17350,
+    "wall_clock_ms": 216934,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 348,
+    "timestamp": "2026-03-27T05:56:12Z",
+    "loss": 0.320175,
+    "buffer_size": 50000,
+    "games_played": 17400,
+    "wall_clock_ms": 196849,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 349,
+    "timestamp": "2026-03-27T05:59:25Z",
+    "loss": 0.314296,
+    "buffer_size": 50000,
+    "games_played": 17450,
+    "wall_clock_ms": 193637,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 350,
+    "timestamp": "2026-03-27T06:02:33Z",
+    "loss": 0.446604,
+    "buffer_size": 50000,
+    "games_played": 17500,
+    "wall_clock_ms": 187842,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 351,
+    "timestamp": "2026-03-27T06:05:37Z",
+    "loss": 0.323743,
+    "buffer_size": 50000,
+    "games_played": 17550,
+    "wall_clock_ms": 184163,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 352,
+    "timestamp": "2026-03-27T06:08:26Z",
+    "loss": 0.36469,
+    "buffer_size": 50000,
+    "games_played": 17600,
+    "wall_clock_ms": 169185,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 353,
+    "timestamp": "2026-03-27T06:10:38Z",
+    "loss": 0.354132,
+    "buffer_size": 50000,
+    "games_played": 17650,
+    "wall_clock_ms": 131717,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 354,
+    "timestamp": "2026-03-27T06:13:43Z",
+    "loss": 0.379276,
+    "buffer_size": 50000,
+    "games_played": 17700,
+    "wall_clock_ms": 185229,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 355,
+    "timestamp": "2026-03-27T06:16:11Z",
+    "loss": 0.378959,
+    "buffer_size": 50000,
+    "games_played": 17750,
+    "wall_clock_ms": 147217,
+    "eval_win_rate": 0.64,
+    "champion_updated": true
+  },
+  {
+    "iteration": 356,
+    "timestamp": "2026-03-27T06:21:18Z",
+    "loss": 0.404565,
+    "buffer_size": 50000,
+    "games_played": 17800,
+    "wall_clock_ms": 152696,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 357,
+    "timestamp": "2026-03-27T06:23:54Z",
+    "loss": 0.342684,
+    "buffer_size": 50000,
+    "games_played": 17850,
+    "wall_clock_ms": 156387,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 358,
+    "timestamp": "2026-03-27T06:26:17Z",
+    "loss": 0.314246,
+    "buffer_size": 50000,
+    "games_played": 17900,
+    "wall_clock_ms": 142875,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 359,
+    "timestamp": "2026-03-27T06:29:00Z",
+    "loss": 0.451535,
+    "buffer_size": 50000,
+    "games_played": 17950,
+    "wall_clock_ms": 162411,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 360,
+    "timestamp": "2026-03-27T06:31:47Z",
+    "loss": 0.401658,
+    "buffer_size": 50000,
+    "games_played": 18000,
+    "wall_clock_ms": 167342,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 361,
+    "timestamp": "2026-03-27T06:34:51Z",
+    "loss": 0.341914,
+    "buffer_size": 50000,
+    "games_played": 18050,
+    "wall_clock_ms": 183730,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 362,
+    "timestamp": "2026-03-27T06:37:07Z",
+    "loss": 0.41643,
+    "buffer_size": 50000,
+    "games_played": 18100,
+    "wall_clock_ms": 136728,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 363,
+    "timestamp": "2026-03-27T06:39:53Z",
+    "loss": 0.364908,
+    "buffer_size": 50000,
+    "games_played": 18150,
+    "wall_clock_ms": 165906,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 364,
+    "timestamp": "2026-03-27T06:42:09Z",
+    "loss": 0.377043,
+    "buffer_size": 50000,
+    "games_played": 18200,
+    "wall_clock_ms": 135623,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 365,
+    "timestamp": "2026-03-27T06:44:13Z",
+    "loss": 0.328955,
+    "buffer_size": 50000,
+    "games_played": 18250,
+    "wall_clock_ms": 123874,
+    "eval_win_rate": 0.56,
+    "champion_updated": true
+  },
+  {
+    "iteration": 366,
+    "timestamp": "2026-03-27T06:49:06Z",
+    "loss": 0.331541,
+    "buffer_size": 50000,
+    "games_played": 18300,
+    "wall_clock_ms": 148602,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 367,
+    "timestamp": "2026-03-27T06:51:25Z",
+    "loss": 0.404558,
+    "buffer_size": 50000,
+    "games_played": 18350,
+    "wall_clock_ms": 138360,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 368,
+    "timestamp": "2026-03-27T06:53:52Z",
+    "loss": 0.304824,
+    "buffer_size": 50000,
+    "games_played": 18400,
+    "wall_clock_ms": 147252,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 369,
+    "timestamp": "2026-03-27T06:55:57Z",
+    "loss": 0.334359,
+    "buffer_size": 50000,
+    "games_played": 18450,
+    "wall_clock_ms": 125553,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 370,
+    "timestamp": "2026-03-27T06:58:28Z",
+    "loss": 0.387587,
+    "buffer_size": 50000,
+    "games_played": 18500,
+    "wall_clock_ms": 150068,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 371,
+    "timestamp": "2026-03-27T07:01:28Z",
+    "loss": 0.39781,
+    "buffer_size": 50000,
+    "games_played": 18550,
+    "wall_clock_ms": 180562,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 372,
+    "timestamp": "2026-03-27T07:04:12Z",
+    "loss": 0.343065,
+    "buffer_size": 50000,
+    "games_played": 18600,
+    "wall_clock_ms": 164386,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 373,
+    "timestamp": "2026-03-27T07:06:49Z",
+    "loss": 0.413227,
+    "buffer_size": 50000,
+    "games_played": 18650,
+    "wall_clock_ms": 156073,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 374,
+    "timestamp": "2026-03-27T07:10:06Z",
+    "loss": 0.371405,
+    "buffer_size": 50000,
+    "games_played": 18700,
+    "wall_clock_ms": 197386,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 375,
+    "timestamp": "2026-03-27T07:12:09Z",
+    "loss": 0.361828,
+    "buffer_size": 50000,
+    "games_played": 18750,
+    "wall_clock_ms": 123521,
+    "eval_win_rate": 0.96,
+    "champion_updated": true
+  },
+  {
+    "iteration": 376,
+    "timestamp": "2026-03-27T07:18:04Z",
+    "loss": 0.400019,
+    "buffer_size": 50000,
+    "games_played": 18800,
+    "wall_clock_ms": 136985,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 377,
+    "timestamp": "2026-03-27T07:20:21Z",
+    "loss": 0.359564,
+    "buffer_size": 50000,
+    "games_played": 18850,
+    "wall_clock_ms": 136917,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 378,
+    "timestamp": "2026-03-27T07:22:51Z",
+    "loss": 0.399233,
+    "buffer_size": 50000,
+    "games_played": 18900,
+    "wall_clock_ms": 150062,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 379,
+    "timestamp": "2026-03-27T07:25:29Z",
+    "loss": 0.42743,
+    "buffer_size": 50000,
+    "games_played": 18950,
+    "wall_clock_ms": 158419,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 380,
+    "timestamp": "2026-03-27T07:27:42Z",
+    "loss": 0.323342,
+    "buffer_size": 50000,
+    "games_played": 19000,
+    "wall_clock_ms": 133359,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 381,
+    "timestamp": "2026-03-27T07:30:10Z",
+    "loss": 0.497681,
+    "buffer_size": 50000,
+    "games_played": 19050,
+    "wall_clock_ms": 147371,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 382,
+    "timestamp": "2026-03-27T07:32:48Z",
+    "loss": 0.39302,
+    "buffer_size": 50000,
+    "games_played": 19100,
+    "wall_clock_ms": 157908,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 383,
+    "timestamp": "2026-03-27T07:35:17Z",
+    "loss": 0.381307,
+    "buffer_size": 50000,
+    "games_played": 19150,
+    "wall_clock_ms": 149375,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 384,
+    "timestamp": "2026-03-27T07:37:28Z",
+    "loss": 0.388123,
+    "buffer_size": 50000,
+    "games_played": 19200,
+    "wall_clock_ms": 130511,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 385,
+    "timestamp": "2026-03-27T07:39:40Z",
+    "loss": 0.42001,
+    "buffer_size": 50000,
+    "games_played": 19250,
+    "wall_clock_ms": 132286,
+    "eval_win_rate": 0.48,
+    "champion_updated": false
+  },
+  {
+    "iteration": 386,
+    "timestamp": "2026-03-27T07:44:32Z",
+    "loss": 0.366319,
+    "buffer_size": 50000,
+    "games_played": 19300,
+    "wall_clock_ms": 144856,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 387,
+    "timestamp": "2026-03-27T07:46:56Z",
+    "loss": 0.336888,
+    "buffer_size": 50000,
+    "games_played": 19350,
+    "wall_clock_ms": 144053,
+    "eval_win_rate": null,
+    "champion_updated": false
+  },
+  {
+    "iteration": 388,
+    "timestamp": "2026-03-27T07:49:10Z",
+    "loss": 0.373834,
+    "buffer_size": 50000,
+    "games_played": 19400,
+    "wall_clock_ms": 133900,
+    "eval_win_rate": null,
+    "champion_updated": false
   }
 ]

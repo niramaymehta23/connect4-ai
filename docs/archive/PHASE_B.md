@@ -1,5 +1,7 @@
 # Phase B — Neural Network Reinforcement Learning
 
+> Historical design notes; see ../GUIDE.md for the current learning path.
+
 ## Overview
 
 Replace the heuristic scorer with a neural network that learns purely

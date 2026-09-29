@@ -139,7 +139,7 @@ def _backpropagate(node, result):
         node = node.parent
 
 
-def make_mcts_bot(iterations=500, C=1.414, rollout_weights=None, temperature=1.0):
+def make_mcts_bot(iterations=500, C=1.414, rollout_weights=None, temperature=1.0, sample_moves=False):
     """
     Return a bot function with signature (board, token) -> col.
     Compatible with runner.py and tournament.py without any changes.
@@ -154,6 +154,8 @@ def make_mcts_bot(iterations=500, C=1.414, rollout_weights=None, temperature=1.0
                       Higher → more random; lower → more greedy.
                       Only used when rollout_weights is not None.
     """
+    if iterations < 1 or temperature <= 0:
+        raise ValueError('iterations and rollout temperature must be positive')
     def bot(board, token):
         root = MCTSNode(clone(board), None, None, token)
 
@@ -200,6 +202,8 @@ def make_mcts_bot(iterations=500, C=1.414, rollout_weights=None, temperature=1.0
         if not root.children:
             return random.choice(valid_cols(board))
 
+        if not sample_moves:
+            return max(root.children, key=lambda child: child.visits).move
         # Sample proportionally from visit counts instead of always taking argmax.
         # Breaks determinism while still strongly preferring the most-visited move.
         children = root.children
