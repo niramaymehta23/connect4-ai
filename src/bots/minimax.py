@@ -95,6 +95,84 @@ def _alphabeta(board, token, opponent, depth, alpha, beta, is_maximising, weight
         return best
 
 
+def minimax_trace(board, token, depth=4, weights=None, max_events=4000):
+    """
+    Run the same root loop and alpha-beta search as `minimax_bot`, recording it.
+
+    Returns {"best_col", "depth", "root", "events", "truncated"}. `root` lists each
+    root column in search order with its score, nodes searched and moves pruned.
+    `events` (capped at `max_events`) are {"path", "kind", "score"} in visit order,
+    where kind is "leaf", "prune" (score = moves skipped) or "done" (root column finished).
+    """
+    if weights is None:
+        weights = DEFAULT_WEIGHTS
+    board = [row[:] for row in board]
+    opponent = HUMAN if token == AI else AI
+    events = []
+    truncated = False
+
+    def emit(path, kind, score):
+        nonlocal truncated
+        if len(events) < max_events:
+            events.append({"path": list(path), "kind": kind, "score": score})
+        else:
+            truncated = True
+
+    def search(depth, alpha, beta, is_maximising, path, stats):
+        stats["nodes"] += 1
+        just_moved = opponent if is_maximising else token
+        if check_win(board, just_moved):
+            score = weights['terminalWin'] if just_moved == token else -weights['terminalWin']
+            score += (depth if just_moved == token else -depth) * weights['depthBonus']
+            emit(path, "leaf", score)
+            return score
+        if is_full(board):
+            emit(path, "leaf", 0)
+            return 0
+        if depth == 0:
+            score = _evaluate(board, token, weights)
+            emit(path, "leaf", score)
+            return score
+
+        cols = _ordered_cols(valid_cols(board))
+        best = -math.inf if is_maximising else math.inf
+        for index, col in enumerate(cols):
+            place(board, col, token if is_maximising else opponent)
+            path.append(col)
+            score = search(depth - 1, alpha, beta, not is_maximising, path, stats)
+            path.pop()
+            unplace(board, col)
+            if is_maximising:
+                best = max(best, score)
+                alpha = max(alpha, best)
+            else:
+                best = min(best, score)
+                beta = min(beta, best)
+            if alpha >= beta:
+                skipped = len(cols) - index - 1
+                if skipped:
+                    stats["pruned"] += skipped
+                    emit(path, "prune", skipped)
+                break
+        return best
+
+    root = []
+    best_score = -math.inf
+    best_col = None
+    for col in _ordered_cols(valid_cols(board)):
+        stats = {"nodes": 0, "pruned": 0}
+        place(board, col, token)
+        score = search(depth - 1, -math.inf, math.inf, False, [col], stats)
+        unplace(board, col)
+        emit([col], "done", score)
+        root.append({"col": col, "score": score, **stats})
+        if best_col is None or score > best_score:
+            best_score = score
+            best_col = col
+
+    return {"best_col": best_col, "depth": depth, "root": root, "events": events, "truncated": truncated}
+
+
 def _evaluate(board, token, weights):
     """
     Heuristic evaluation of a non-terminal position from `token`'s perspective.

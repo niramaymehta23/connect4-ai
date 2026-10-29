@@ -139,6 +139,63 @@ def _backpropagate(node, result):
         node = node.parent
 
 
+def _search(board, token, iterations, C, rollout_weights, temperature, snapshot_every=None):
+    """Run MCTS from `board`; return the root and optional per-column visit snapshots."""
+    root = MCTSNode(clone(board), None, None, token)
+    snapshots = []
+
+    for iteration in range(1, iterations + 1):
+        # 1. Selection — walk down picking best child until a non-fully-expanded
+        #    or terminal node is reached.
+        node = root
+        while not node.is_terminal() and node.is_fully_expanded():
+            node = node.best_child(C)
+
+        # 2. Expansion — add one new child for an unvisited move.
+        if not node.is_terminal() and not node.is_fully_expanded():
+            node = node.expand()
+
+        # 3. Simulation — determine the outcome from this position.
+        if node.is_terminal():
+            # The player who just moved to reach this node won (or it's a draw).
+            # The player who moved = node.parent.token (or root.token if node==root).
+            last_player = node.parent.token if node.parent is not None else token
+            if check_win(node.board, last_player):
+                winner = last_player
+            else:
+                winner = None  # draw
+        elif rollout_weights is not None:
+            winner = _weighted_rollout(node.board, node.token,
+                                       rollout_weights, temperature)
+        else:
+            winner = _rollout(node.board, node.token)
+
+        # Convert winner → result from the perspective of the player who
+        # chose to go to `node` (= node.parent.token, or `token` for root).
+        chooser = node.parent.token if node.parent is not None else token
+        if winner is None:
+            result = 0.5
+        elif winner == chooser:
+            result = 1.0
+        else:
+            result = 0.0
+
+        # 4. Backpropagation — walk up, flipping perspective at each level.
+        _backpropagate(node, result)
+
+        if snapshot_every and iteration % snapshot_every == 0:
+            snapshots.append(_root_visits(root))
+
+    return root, snapshots
+
+
+def _root_visits(root):
+    visits = [0] * 7
+    for child in root.children:
+        visits[child.move] = child.visits
+    return visits
+
+
 def make_mcts_bot(iterations=500, C=1.414, rollout_weights=None, temperature=1.0, sample_moves=False):
     """
     Return a bot function with signature (board, token) -> col.
@@ -157,46 +214,7 @@ def make_mcts_bot(iterations=500, C=1.414, rollout_weights=None, temperature=1.0
     if iterations < 1 or temperature <= 0:
         raise ValueError('iterations and rollout temperature must be positive')
     def bot(board, token):
-        root = MCTSNode(clone(board), None, None, token)
-
-        for _ in range(iterations):
-            # 1. Selection — walk down picking best child until a non-fully-expanded
-            #    or terminal node is reached.
-            node = root
-            while not node.is_terminal() and node.is_fully_expanded():
-                node = node.best_child(C)
-
-            # 2. Expansion — add one new child for an unvisited move.
-            if not node.is_terminal() and not node.is_fully_expanded():
-                node = node.expand()
-
-            # 3. Simulation — determine the outcome from this position.
-            if node.is_terminal():
-                # The player who just moved to reach this node won (or it's a draw).
-                # The player who moved = node.parent.token (or root.token if node==root).
-                last_player = node.parent.token if node.parent is not None else token
-                if check_win(node.board, last_player):
-                    winner = last_player
-                else:
-                    winner = None  # draw
-            elif rollout_weights is not None:
-                winner = _weighted_rollout(node.board, node.token,
-                                           rollout_weights, temperature)
-            else:
-                winner = _rollout(node.board, node.token)
-
-            # Convert winner → result from the perspective of the player who
-            # chose to go to `node` (= node.parent.token, or `token` for root).
-            chooser = node.parent.token if node.parent is not None else token
-            if winner is None:
-                result = 0.5
-            elif winner == chooser:
-                result = 1.0
-            else:
-                result = 0.0
-
-            # 4. Backpropagation — walk up, flipping perspective at each level.
-            _backpropagate(node, result)
+        root, _ = _search(board, token, iterations, C, rollout_weights, temperature)
 
         # Pick move with the most visits (robust to outliers).
         if not root.children:
@@ -214,3 +232,20 @@ def make_mcts_bot(iterations=500, C=1.414, rollout_weights=None, temperature=1.0
         return best.move
 
     return bot
+
+
+def mcts_search(board, token, iterations=500, C=1.414, rollout_weights=None, temperature=1.0,
+                snapshot_every=None):
+    """Choose a move like the argmax bot and expose root visit counts per column.
+
+    Returns {"col", "visits": [7 ints], "snapshots": [[7 ints], ...]} where a snapshot is
+    taken every `snapshot_every` iterations (none when it is falsy).
+    """
+    if iterations < 1 or temperature <= 0:
+        raise ValueError('iterations and rollout temperature must be positive')
+    root, snapshots = _search(board, token, iterations, C, rollout_weights, temperature, snapshot_every)
+    if root.children:
+        col = max(root.children, key=lambda child: child.visits).move
+    else:
+        col = random.choice(valid_cols(board))
+    return {"col": col, "visits": _root_visits(root), "snapshots": snapshots}

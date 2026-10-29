@@ -20,6 +20,20 @@
       <div class="hero">
         <h1>Connect4 AI</h1>
         <p class="hero-sub">Explore search, evolution, and neural self-play.</p>
+        <p class="hero-purpose">What happens when you throw increasingly sophisticated AI at Connect Four?
+          Play against each agent, watch them think move by move, and compare what you can measure:
+          win rates, decision time, and how a neural network improves through self-play.</p>
+        <nav class="site-nav">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/training">Training progress</a>
+        </nav>
+        <div class="agent-timeline">
+          <div class="timeline-step"><strong>1. Random</strong><span>Picks any legal column. The baseline.</span></div>
+          <div class="timeline-step"><strong>2. Minimax</strong><span>Searches 6 plies ahead with a hand-tuned evaluation.</span></div>
+          <div class="timeline-step"><strong>3. Evolved</strong><span>Minimax whose evaluation weights were evolved by a genetic algorithm.</span></div>
+          <div class="timeline-step"><strong>4. MCTS</strong><span>Runs random playouts and favours moves that win most often.</span></div>
+          <div class="timeline-step"><strong>5. Neural-MCTS</strong><span>MCTS guided by a value network trained through self-play.</span></div>
+        </div>
         <div class="mode-cards">
           <button class="mode-card" data-mode="pvp">
             <span class="card-icon">⬡</span>
@@ -73,11 +87,17 @@
           <div class="panel board-panel">
             <div class="panel-header">
               <h3>Board</h3>
-              <span class="panel-caption">Connect 4</span>
+              <label class="overlay-toggle">
+                <input type="checkbox" id="overlay-toggle">
+                <span>Value overlay</span>
+              </label>
             </div>
             <div id="board" class="board"></div>
             <div class="index-row" id="board-index"></div>
+            <p class="overlay-caption" id="overlay-caption">Off · tints each cell by how much it moves Red's value</p>
           </div>
+
+          <div id="analysis-panel" class="panel analysis-panel hidden"></div>
         </div>
 
         <div class="side-column">
@@ -87,12 +107,33 @@
               <span id="winner-badge" class="winner-badge hidden">Win</span>
             </div>
             <div id="status-text">Red's turn</div>
+            <button id="compare-button" class="secondary-button compare-button">Ask every agent</button>
+          </div>
+
+          <div id="compare-panel" class="panel hidden">
+            <div class="panel-header">
+              <h3>Every agent, this position</h3>
+            </div>
+            <p class="panel-caption" id="compare-caption"></p>
+            <table class="compare-table">
+              <thead><tr><th>Agent</th><th>Column</th><th>ms</th></tr></thead>
+              <tbody id="compare-body"></tbody>
+            </table>
+          </div>
+
+          <div id="search-panel" class="panel hidden">
+            <div class="panel-header">
+              <h3>Minimax search</h3>
+            </div>
+            <p class="panel-caption search-caption" id="search-caption"></p>
+            <div class="search-legend"><span>col</span><span>positions searched</span><span>pruned</span><span>score</span></div>
+            <div id="search-list" class="search-list"></div>
           </div>
 
           <div id="controls-panel" class="panel controls-panel hidden">
             <div class="panel-header">
               <h3>Bot Controls</h3>
-              <span class="panel-caption">Autoplay</span>
+              <span class="panel-caption">Autoplay every <span id="speed-label">1.0s</span></span>
             </div>
             <div class="control-row">
               <button id="reset-button" class="secondary-button">Reset</button>

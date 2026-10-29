@@ -37,9 +37,11 @@ def run_game(bot_a, bot_b, bot_a_goes_first=True, opening_moves=None):
     `opening_moves` can provide a legal, non-terminal sequence of columns. This is
     useful for evaluating deterministic agents across more than one trajectory.
 
-    Returns dict with winner, move count, duration, and the complete column history.
+    Returns dict with winner, move count, duration (ms), the complete column history, and
+    move_times_ms aligned with it (None for opening plies, which no bot chose).
     """
     board, current_token, move_history = prepare_opening(opening_moves)
+    move_times_ms = [None] * len(move_history)
     bot_for_token = {
         AI: bot_a if bot_a_goes_first else bot_b,
         HUMAN: bot_b if bot_a_goes_first else bot_a,
@@ -53,7 +55,9 @@ def run_game(bot_a, bot_b, bot_a_goes_first=True, opening_moves=None):
 
     while True:
         token = current_token
+        move_started = time.perf_counter()
         col = bot_for_token[token](board, token)
+        move_times_ms.append((time.perf_counter() - move_started) * 1000)
         if col not in valid_cols(board):
             raise ValueError(f"bot selected illegal column: {col}")
 
@@ -67,6 +71,7 @@ def run_game(bot_a, bot_b, bot_a_goes_first=True, opening_moves=None):
                 'moves': len(move_history),
                 'duration': duration,
                 'move_history': move_history,
+                'move_times_ms': move_times_ms,
             }
 
         if is_full(board):
@@ -76,6 +81,7 @@ def run_game(bot_a, bot_b, bot_a_goes_first=True, opening_moves=None):
                 'moves': len(move_history),
                 'duration': duration,
                 'move_history': move_history,
+                'move_times_ms': move_times_ms,
             }
 
         current_token = _opponent(token)

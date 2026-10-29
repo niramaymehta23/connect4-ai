@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect4 AI — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    .dash-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    .dash-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .dash-header h1 { font-size: 2rem; margin: 0; }
+    .dash-header .nav-links { margin-left: auto; display: flex; gap: 1rem; }
+    .nav-link {
+      color: var(--muted-hi);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .nav-link:hover { color: var(--fg); border-color: var(--muted-hi); }
+    .nav-link.active { color: var(--accent); border-color: var(--accent); }
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .chart-card h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted-hi);
+      margin: 0 0 1rem;
+    }
+    .chart-card canvas { max-height: 300px; }
+    .chart-card.wide { grid-column: 1 / -1; }
+    .chart-note { margin: 0.75rem 0 0; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; }
+    .chart-note code { color: var(--muted-hi); }
+    .no-data {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 2rem 0;
+      text-align: center;
+    }
+    .summary-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+    .stat-chip strong { display: block; font-size: 1.4rem; color: var(--accent); margin-bottom: 0.1rem; }
+  </style>
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <main class="dash-layout">
+    <div class="dash-header">
+      <h1>Performance Dashboard</h1>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Play</a>
+        <a href="/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/training" class="nav-link">Training</a>
+      </nav>
+    </div>
+
+    <div id="summary-row" class="summary-row"></div>
+
+    <div id="no-data" class="no-data" style="display:none">
+      No run files found in <code>runs/</code>. Run <code>python scripts/compare.py</code> to generate data.
+    </div>
+
+    <div class="charts-grid" id="charts-grid">
+      <div class="chart-card">
+        <h3>Score Rate Matrix</h3>
+        <div id="win-matrix"></div>
+      </div>
+      <div class="chart-card">
+        <h3>Decision Time per Move</h3>
+        <canvas id="decision-time"></canvas>
+        <p class="chart-note" id="decision-note"></p>
+      </div>
+      <div class="chart-card wide">
+        <h3>Score Rate vs Search Budget</h3>
+        <canvas id="budget-chart"></canvas>
+        <p class="chart-note" id="budget-note"></p>
+      </div>
+      <div class="chart-card">
+        <h3>Game Length Distribution</h3>
+        <canvas id="game-length"></canvas>
+      </div>
+      <div class="chart-card wide">
+        <h3>Results by Run</h3>
+        <div id="win-rate-wrap" style="position: relative;"><canvas id="win-rate-bar"></canvas></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    Chart.defaults.color = '#9b95b0';
+    Chart.defaults.borderColor = '#2e2a44';
+
+    // Agent names as scripts/compare.py records them.
+    const AGENT_LABELS = {
+      random: 'Random', minimax: 'Minimax', evolved: 'Evolved minimax', mcts: 'MCTS',
+      'weighted-mcts': 'Weighted MCTS', neural: 'Neural', 'neural-mcts': 'Neural+MCTS',
+    };
+    const BUDGETED = new Set(['mcts', 'weighted-mcts', 'neural-mcts']);
+    const DEPTH_AGENTS = new Set(['minimax', 'evolved']);
+    const SERIES_COLORS = ['#f0c040', '#ff6b6b', '#4a9cf7', '#64c882', '#c48bff', '#ff9f43'];
+
+    async function loadData() {
+      const res = await fetch('/api/dashboard');
+      return res.json();
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    function agentLabel(id) {
+      return AGENT_LABELS[id] || id;
+    }
+
+    // An agent together with the setting that changes its strength, e.g. "MCTS @200".
+    function configuredAgent(run, side) {
+      const agent = run[side];
+      if (BUDGETED.has(agent) && run.simulations) return `${agentLabel(agent)} @${run.simulations}`;
+      if (DEPTH_AGENTS.has(agent) && run.depth) return `${agentLabel(agent)} d${run.depth}`;
+      return agentLabel(agent);
+    }
+
+    function scoreRate(wins, draws, games) {
+      return games > 0 ? (wins + 0.5 * draws) / games : null;
+    }
+
+    function renderSummary(runs) {
+      const totalGames = runs.reduce((s, r) => s + r.games, 0);
+      const matchups = runs.length;
+      const el = document.getElementById('summary-row');
+      el.innerHTML = `
+        <div class="stat-chip"><strong>${totalGames}</strong>total games</div>
+        <div class="stat-chip"><strong>${matchups}</strong>run files</div>
+        <div class="stat-chip"><strong>${new Set(runs.flatMap(r => [r.a, r.b])).size}</strong>agents</div>
+      `;
+    }
+
+    // Pools every run between two agents (all budgets), from the row agent's side.
+    function renderWinMatrix(runs) {
+      const agents = [...new Set(runs.flatMap(r => [r.a, r.b]))].sort();
+      if (agents.length < 2) {
+        document.getElementById('win-matrix').innerHTML =
+          '<p class="chart-note">Needs runs between at least two different agents.</p>';
+        return;
+      }
+      const pooled = {};
+      const add = (row, col, wins, draws, games) => {
+        const key = `${row}||${col}`;
+        pooled[key] = pooled[key] || { wins: 0, draws: 0, games: 0 };
+        pooled[key].wins += wins;
+        pooled[key].draws += draws;
+        pooled[key].games += games;
+      };
+      for (const r of runs) {
+        add(r.a, r.b, r.wins, r.draws, r.games);
+        add(r.b, r.a, r.losses, r.draws, r.games);
+      }
+
+      let html = '<table class="win-matrix"><tr><th>row vs col</th>' +
+        agents.map(a => `<th>${escapeHtml(agentLabel(a))}</th>`).join('') + '</tr>';
+      for (const rowAgent of agents) {
+        html += `<tr><th>${escapeHtml(agentLabel(rowAgent))}</th>`;
+        for (const colAgent of agents) {
+          const cell = rowAgent === colAgent ? null : pooled[`${rowAgent}||${colAgent}`];
+          const v = cell ? scoreRate(cell.wins, cell.draws, cell.games) : null;
+          if (v === null) { html += '<td>—</td>'; continue; }
+          const bg = `rgba(240,192,64,${(0.1 + 0.7 * v).toFixed(2)})`;
+          html += `<td style="background:${bg}" title="${cell.games} games">${(v * 100).toFixed(0)}%</td>`;
+        }
+        html += '</tr>';
+      }
+      document.getElementById('win-matrix').innerHTML = html + '</table>' +
+        '<p class="chart-note">Score rate = (wins + ½ draws) / games, pooled over every budget in runs/.</p>';
+    }
+
+    // Real per-move timing recorded by run_game (move_times_ms); older files lack it.
+    function renderDecisionTime(runs) {
+      const timed = runs.filter(r => r.agent_ms);
+      const untimed = runs.length - timed.length;
+      const samples = {};
+      for (const r of timed) {
+        for (const side of ['a', 'b']) {
+          if (r.agent_ms[side] === null) continue;
+          const key = configuredAgent(r, side);
+          (samples[key] = samples[key] || []).push(r.agent_ms[side]);
+        }
+      }
+      const entries = Object.entries(samples)
+        .map(([key, values]) => [key, values.reduce((s, v) => s + v, 0) / values.length])
+        .sort((x, y) => x[1] - y[1]);
+      document.getElementById('decision-note').textContent = entries.length
+        ? `Average of per-run means.${untimed ? ` ${untimed} older run file(s) have no per-move timing and are left out.` : ''}`
+        : 'No run has per-move timing yet; re-run scripts/compare.py to record it.';
+      if (!entries.length) return;
+
+      new Chart(document.getElementById('decision-time'), {
+        type: 'bar',
+        data: {
+          labels: entries.map(([key]) => key),
+          datasets: [{
+            label: 'ms per move',
+            data: entries.map(([, ms]) => ms),
+            backgroundColor: 'rgba(130,100,220,0.7)',
+            borderColor: 'rgba(160,130,255,1)',
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: (item) => `${item.parsed.x.toFixed(1)} ms per move` } } },
+          scales: { x: { title: { display: true, text: 'ms per move' } }, y: { ticks: { autoSkip: false } } },
+        },
+      });
+    }
+
+    function renderBudget(runs) {
+      const series = {};
+      for (const r of runs) {
+        // compare.py gives both sides the same --simulations, so only a run with exactly
+        // one budgeted agent says something about that agent's budget.
+        const aBudgeted = BUDGETED.has(r.a);
+        if (aBudgeted === BUDGETED.has(r.b) || !r.simulations) continue;
+        const [side, other] = aBudgeted ? ['a', 'b'] : ['b', 'a'];
+        const won = side === 'a' ? r.wins : r.losses;
+        const key = `${agentLabel(r[side])} vs ${configuredAgent(r, other)}`;
+        (series[key] = series[key] || []).push({ x: r.simulations, y: 100 * scoreRate(won, r.draws, r.games), games: r.games });
+      }
+      const keys = Object.keys(series).sort();
+      const note = document.getElementById('budget-note');
+      if (!keys.length) {
+        note.innerHTML = 'No budget sweeps yet. Generate them with <code>python scripts/budget_sweep.py --agent mcts --opponent minimax</code>.';
+        return;
+      }
+      note.innerHTML = 'Each point is one run file: the searching agent\'s score rate, whichever side it played. Sweep more with <code>python scripts/budget_sweep.py</code>.';
+      new Chart(document.getElementById('budget-chart'), {
+        type: 'scatter',
+        data: {
+          datasets: keys.map((key, i) => ({
+            label: key,
+            data: series[key].sort((p, q) => p.x - q.x),
+            showLine: true,
+            borderColor: SERIES_COLORS[i % SERIES_COLORS.length],
+            backgroundColor: SERIES_COLORS[i % SERIES_COLORS.length],
+            pointRadius: 4,
+          })),
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { callbacks: { label: (item) => `${item.dataset.label}: ${item.parsed.y.toFixed(0)}% at ${item.parsed.x} simulations (${item.raw.games} games)` } },
+          },
+          scales: {
+            x: { type: 'logarithmic', title: { display: true, text: 'simulations per move (log scale)' } },
+            y: { min: 0, max: 100, title: { display: true, text: 'score rate %' } },
+          },
+        },
+      });
+    }
+
+    function renderGameLength(runs) {
+      const allMoves = runs.flatMap(r => r.move_lengths);
+      if (!allMoves.length) {
+        document.getElementById('game-length').replaceWith(Object.assign(document.createElement('p'),
+          { className: 'chart-note', textContent: 'The run files contain no game records.' }));
+        return;
+      }
+      const bins = Array(15).fill(0);
+      for (const m of allMoves) {
+        const idx = Math.min(Math.floor(m / 3), 14);
+        bins[idx]++;
+      }
+      const labels = bins.map((_, i) => `${i * 3}–${i * 3 + 2}`);
+      new Chart(document.getElementById('game-length'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Games',
+            data: bins,
+            backgroundColor: 'rgba(100,180,130,0.7)',
+            borderColor: 'rgba(130,210,160,1)',
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { x: { title: { display: true, text: 'moves' } }, y: { title: { display: true, text: 'count' } } },
+        },
+      });
+    }
+
+    function renderWinRateBar(allRuns) {
+      const runs = [...allRuns].sort((p, q) =>
+        `${p.a}|${p.b}`.localeCompare(`${q.a}|${q.b}`) || (p.simulations ?? 0) - (q.simulations ?? 0));
+      document.getElementById('win-rate-wrap').style.height = `${Math.max(160, 34 * runs.length + 60)}px`;
+      document.getElementById('win-rate-bar').style.maxHeight = 'none';
+      new Chart(document.getElementById('win-rate-bar'), {
+        type: 'bar',
+        data: {
+          labels: runs.map(r => `${configuredAgent(r, 'a')} vs ${configuredAgent(r, 'b')}`),
+          datasets: [
+            {
+              label: 'A wins',
+              data: runs.map(r => r.games > 0 ? (r.wins / r.games * 100).toFixed(1) : 0),
+              backgroundColor: 'rgba(220,70,70,0.7)',
+            },
+            {
+              label: 'B wins',
+              data: runs.map(r => r.games > 0 ? (r.losses / r.games * 100).toFixed(1) : 0),
+              backgroundColor: 'rgba(220,180,50,0.7)',
+            },
+            {
+              label: 'Draws',
+              data: runs.map(r => r.games > 0 ? (r.draws / r.games * 100).toFixed(1) : 0),
+              backgroundColor: 'rgba(100,100,150,0.5)',
+            },
+          ],
+        },
+        options: {
+          indexAxis: 'y',
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } },
+          scales: { x: { stacked: true, max: 100, title: { display: true, text: '%' } }, y: { stacked: true } },
+        },
+      });
+    }
+
+    async function boot() {
+      try {
+        const runs = await loadData();
+        if (!runs.length) {
+          document.getElementById('no-data').style.display = 'block';
+          document.getElementById('charts-grid').style.display = 'none';
+          return;
+        }
+        renderSummary(runs);
+        renderWinMatrix(runs);
+        renderDecisionTime(runs);
+        renderBudget(runs);
+        renderGameLength(runs);
+        renderWinRateBar(runs);
+      } catch (e) {
+        document.getElementById('no-data').style.display = 'block';
+        document.getElementById('no-data').textContent = `Error loading data: ${e.message}`;
+        document.getElementById('charts-grid').style.display = 'none';
+      }
+    }
+
+    boot();
+  </script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect4 AI — Training Progress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    .train-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    .train-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .train-header h1 { font-size: 2rem; margin: 0; }
+    .train-header .nav-links { margin-left: auto; display: flex; gap: 1rem; }
+    .nav-link {
+      color: var(--muted-hi);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .nav-link:hover { color: var(--fg); border-color: var(--muted-hi); }
+    .nav-link.active { color: var(--accent); border-color: var(--accent); }
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .chart-card h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted-hi);
+      margin: 0 0 1rem;
+    }
+    .chart-card canvas { max-height: 300px; }
+    .no-data {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 2rem 0;
+      text-align: center;
+    }
+    .summary-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+    .stat-chip strong { display: block; font-size: 1.4rem; color: var(--accent); margin-bottom: 0.1rem; }
+    .section-title {
+      font-size: 1.1rem; margin: 2.5rem 0 1rem; color: var(--muted-hi);
+      font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 400;
+    }
+    .chart-note { margin: 0.75rem 0 0; color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; }
+    .chart-note code { color: var(--muted-hi); }
+    .era-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .era-buttons button { background: transparent; cursor: pointer; }
+    .replay-body { display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: start; }
+    .replay-body[hidden] { display: none; }
+    .replay-controls { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
+    .replay-controls input { flex: 1; accent-color: var(--gold); }
+    .replay-controls button { background: transparent; cursor: pointer; padding: 0.2rem 0.6rem; }
+    .replay-chart canvas { max-height: 260px; }
+    .champion-badge {
+      display: inline-block;
+      background: rgba(130,100,220,0.2);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      vertical-align: middle;
+      margin-left: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <main class="train-layout">
+    <div class="train-header">
+      <h1>Neural Training Progress</h1>
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Play</a>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/training" class="nav-link active">Training</a>
+      </nav>
+    </div>
+
+    <div id="summary-row" class="summary-row"></div>
+
+    <div id="no-data" class="no-data" style="display:none">
+      No training history found in data/metrics/nn_history.json. Run <code>python scripts/train_nn.py</code> to generate it.
+    </div>
+
+    <div class="charts-grid" id="charts-grid">
+      <div class="chart-card">
+        <h3>Training Loss</h3>
+        <canvas id="loss-chart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Win Rate vs Random</h3>
+        <canvas id="winrate-chart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Replay Buffer Growth</h3>
+        <canvas id="buffer-chart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Champion Updates</h3>
+        <canvas id="champion-chart"></canvas>
+      </div>
+    </div>
+
+    <h2 class="section-title">Self-play experiments</h2>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Evaluation Trajectory Diversity</h3>
+        <canvas id="diversity-chart"></canvas>
+        <p class="chart-note" id="diversity-note"></p>
+      </div>
+      <div class="chart-card">
+        <h3>Candidate Score vs Champion</h3>
+        <canvas id="candidate-chart"></canvas>
+        <p class="chart-note">Promotion needs a score above 55% against the current champion.</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">Checkpoint replays</h2>
+    <div class="chart-card replay-card">
+      <p class="chart-note" id="replay-note">Loading checkpoints…</p>
+      <div class="era-buttons" id="era-buttons"></div>
+      <div class="replay-body" id="replay-body" hidden>
+        <div class="replay-board">
+          <div id="replay-board"></div>
+          <div class="replay-controls">
+            <button class="nav-link" id="replay-prev" type="button">◀</button>
+            <input id="replay-step" type="range" min="0" value="0">
+            <button class="nav-link" id="replay-next" type="button">▶</button>
+          </div>
+          <p class="chart-note" id="replay-label"></p>
+        </div>
+        <div class="replay-chart"><canvas id="replay-chart"></canvas></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    Chart.defaults.color = '#9b95b0';
+    Chart.defaults.borderColor = '#2e2a44';
+
+    async function loadData() {
+      const res = await fetch('/api/training');
+      return res.json();
+    }
+
+    function renderSummary(data) {
+      const last = data[data.length - 1];
+      const champions = data.filter(d => d.champion_updated).length;
+      const evalRows = data.filter(d => d.eval_win_rate !== null);
+      const bestWr = evalRows.length ? Math.max(...evalRows.map(d => d.eval_win_rate)) : null;
+      const el = document.getElementById('summary-row');
+      el.innerHTML = `
+        <div class="stat-chip"><strong>${data.length}</strong>iterations</div>
+        <div class="stat-chip"><strong>${champions}</strong>champion updates</div>
+        ${bestWr !== null ? `<div class="stat-chip"><strong>${(bestWr * 100).toFixed(0)}%</strong>peak win rate</div>` : ''}
+        <div class="stat-chip"><strong>${last?.buffer_size ?? '?'}</strong>buffer size</div>
+      `;
+    }
+
+    function mkLineDataset(label, data, color) {
+      return {
+        label,
+        data,
+        borderColor: color,
+        backgroundColor: color.replace('1)', '0.1)'),
+        borderWidth: 1.5,
+        pointRadius: 0,
+        tension: 0.3,
+      };
+    }
+
+    function renderLoss(data) {
+      const iters = data.map(d => d.iteration);
+      const losses = data.map(d => d.loss);
+      const championIters = data.filter(d => d.champion_updated).map(d => d.iteration);
+
+      new Chart(document.getElementById('loss-chart'), {
+        type: 'line',
+        data: {
+          labels: iters,
+          datasets: [
+            mkLineDataset('Loss', losses, 'rgba(220,100,80,1)'),
+            {
+              type: 'scatter',
+              label: 'Champion',
+              data: championIters.map(i => ({ x: i, y: data.find(d => d.iteration === i)?.loss })),
+              pointRadius: 5,
+              pointStyle: 'star',
+              backgroundColor: 'rgba(220,190,50,0.9)',
+              borderColor: 'rgba(220,190,50,1)',
+            },
+          ],
+        },
+        options: {
+          plugins: { legend: { position: 'bottom' } },
+          scales: { x: { title: { display: true, text: 'iteration' } }, y: { title: { display: true, text: 'loss' } } },
+        },
+      });
+    }
+
+    function renderWinRate(data) {
+      const evalRows = data.filter(d => d.eval_win_rate !== null);
+      if (!evalRows.length) {
+        document.getElementById('winrate-chart').closest('.chart-card').style.opacity = '0.4';
+        return;
+      }
+      new Chart(document.getElementById('winrate-chart'), {
+        type: 'line',
+        data: {
+          labels: evalRows.map(d => d.iteration),
+          datasets: [
+            mkLineDataset('Win rate vs random', evalRows.map(d => d.eval_win_rate * 100), 'rgba(100,200,130,1)'),
+            {
+              label: '50%',
+              data: evalRows.map(() => 50),
+              borderColor: 'rgba(100,100,100,0.4)',
+              borderDash: [4, 4],
+              pointRadius: 0,
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          plugins: { legend: { position: 'bottom' } },
+          scales: {
+            x: { title: { display: true, text: 'iteration' } },
+            y: { title: { display: true, text: '%' }, min: 0, max: 100 },
+          },
+        },
+      });
+    }
+
+    function renderBuffer(data) {
+      new Chart(document.getElementById('buffer-chart'), {
+        type: 'line',
+        data: {
+          labels: data.map(d => d.iteration),
+          datasets: [mkLineDataset('Buffer size', data.map(d => d.buffer_size), 'rgba(130,100,220,1)')],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { title: { display: true, text: 'iteration' } },
+            y: { title: { display: true, text: 'positions' } },
+          },
+        },
+      });
+    }
+
+    function renderChampion(data) {
+      // Cumulative champion count over time
+      let count = 0;
+      const cumulative = data.map(d => { if (d.champion_updated) count++; return count; });
+      new Chart(document.getElementById('champion-chart'), {
+        type: 'line',
+        data: {
+          labels: data.map(d => d.iteration),
+          datasets: [{
+            label: 'Cumulative champions',
+            data: cumulative,
+            borderColor: 'rgba(220,190,50,1)',
+            backgroundColor: 'rgba(220,190,50,0.1)',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: true,
+            stepped: true,
+          }],
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { title: { display: true, text: 'iteration' } },
+            y: { title: { display: true, text: 'count' }, beginAtZero: true },
+          },
+        },
+      });
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    const RUN_COLORS = ['#f0c040', '#4a9cf7', '#64c882', '#c48bff', '#ff6b6b'];
+
+    async function renderExperiments() {
+      const runs = await (await fetch('/api/training/runs')).json();
+      const note = document.getElementById('diversity-note');
+      if (!runs.length) {
+        note.innerHTML = 'No learn.py runs in runs/. Start one with <code>python scripts/learn.py --run runs/lesson-01</code>.';
+        document.getElementById('candidate-chart').replaceWith(Object.assign(document.createElement('p'),
+          { className: 'chart-note', textContent: 'Appears once a learn.py run exists.' }));
+        return;
+      }
+      note.textContent = 'Unique game trajectories ÷ games in each iteration\'s candidate-vs-champion evaluation (paired openings, both colours). 100% means no two evaluation games repeated.';
+      const lineSet = (key, scale) => runs.map((run, i) => ({
+        label: run.run,
+        data: run.iterations.map((it) => ({ x: it.iteration, y: it[key] * scale })),
+        borderColor: RUN_COLORS[i % RUN_COLORS.length],
+        backgroundColor: RUN_COLORS[i % RUN_COLORS.length],
+        showLine: true,
+        pointRadius: run.iterations.map((it) => (it.promoted ? 6 : 3)),
+        pointStyle: run.iterations.map((it) => (it.promoted ? 'star' : 'circle')),
+      }));
+      const axes = (yTitle) => ({
+        x: { type: 'linear', title: { display: true, text: 'iteration' }, ticks: { precision: 0 } },
+        y: { min: 0, max: 100, title: { display: true, text: yTitle } },
+      });
+      new Chart(document.getElementById('diversity-chart'), {
+        type: 'scatter',
+        data: { datasets: lineSet('trajectory_diversity', 100) },
+        options: { plugins: { legend: { position: 'bottom' } }, scales: axes('unique trajectories %') },
+      });
+      new Chart(document.getElementById('candidate-chart'), {
+        type: 'scatter',
+        data: { datasets: lineSet('score_rate', 100) },
+        options: { plugins: { legend: { position: 'bottom' } }, scales: axes('score rate % (★ promoted)') },
+      });
+    }
+
+    function miniBoard(moves, count) {
+      const board = Array.from({ length: 6 }, () => Array(7).fill(0));
+      let token = 2;
+      let last = null;
+      moves.slice(0, count).forEach((col) => {
+        let row = 5;
+        while (board[row][col] !== 0) row -= 1;
+        board[row][col] = token;
+        last = [row, col];
+        token = token === 2 ? 1 : 2;
+      });
+      let html = '<div class="mini-board">';
+      board.forEach((cells, row) => cells.forEach((cell, col) => {
+        const mark = last && last[0] === row && last[1] === col ? ' last' : '';
+        const piece = cell === 2 ? 'red' : cell === 1 ? 'yellow' : '';
+        html += `<div class="mini-cell${mark}"><span class="mini-piece ${piece}"></span></div>`;
+      }));
+      return `${html}</div>`;
+    }
+
+    async function renderReplays() {
+      const replays = await (await fetch('/api/training/replays')).json();
+      const note = document.getElementById('replay-note');
+      if (!replays.length) {
+        note.textContent = 'No checkpoints found in models/ (they are not committed). Train with scripts/train_nn.py to create checkpoint_*.pt files.';
+        return;
+      }
+      note.textContent = 'Each checkpoint plays itself greedily (one move of lookahead with its own value net). The line is that checkpoint\'s own estimate of Red\'s chances after every move; compare it with how the game actually ends.';
+      const body = document.getElementById('replay-body');
+      const buttons = document.getElementById('era-buttons');
+      const step = document.getElementById('replay-step');
+      let chart = null;
+      let current = null;
+
+      const showStep = (index) => {
+        const ply = Math.max(0, Math.min(current.moves.length, index));
+        step.value = String(ply);
+        document.getElementById('replay-board').innerHTML = miniBoard(current.moves, ply);
+        const mover = ply === 0 ? 'Start' : `Move ${ply}: ${ply % 2 === 1 ? 'Red' : 'Yellow'} played column ${current.moves[ply - 1] + 1}`;
+        const value = current.values[ply];
+        document.getElementById('replay-label').textContent = `${mover} · Red's value ${value >= 0 ? '+' : ''}${value.toFixed(2)}`;
+        chart.data.datasets[1].data = [{ x: ply, y: value }];
+        chart.update('none');
+      };
+
+      const select = (replay) => {
+        current = replay;
+        buttons.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.checkpoint === replay.checkpoint));
+        step.max = String(replay.moves.length);
+        const winner = replay.winner === 2 ? 'Red wins' : replay.winner === 1 ? 'Yellow wins' : 'draw';
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById('replay-chart'), {
+          type: 'scatter',
+          data: {
+            datasets: [
+              {
+                label: `iteration ${replay.iteration} · ${replay.moves.length} moves · ${winner}`,
+                data: replay.values.map((v, i) => ({ x: i, y: v })),
+                showLine: true, borderColor: '#f0c040', backgroundColor: '#f0c040', pointRadius: 2,
+              },
+              { label: 'current move', data: [], pointRadius: 7, backgroundColor: '#e8eaf0', borderColor: '#e8eaf0' },
+            ],
+          },
+          options: {
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              x: { type: 'linear', title: { display: true, text: 'move' }, ticks: { precision: 0 } },
+              y: { min: -1, max: 1, title: { display: true, text: "Red's value (+1 Red winning)" } },
+            },
+          },
+        });
+        showStep(replay.moves.length);
+      };
+
+      buttons.innerHTML = replays.map((r) =>
+        `<button class="nav-link" type="button" data-checkpoint="${escapeHtml(r.checkpoint)}">Iteration ${r.iteration}</button>`).join('');
+      buttons.addEventListener('click', (event) => {
+        const target = event.target.closest('button[data-checkpoint]');
+        if (target) select(replays.find((r) => r.checkpoint === target.dataset.checkpoint));
+      });
+      step.addEventListener('input', () => showStep(Number(step.value)));
+      document.getElementById('replay-prev').addEventListener('click', () => showStep(Number(step.value) - 1));
+      document.getElementById('replay-next').addEventListener('click', () => showStep(Number(step.value) + 1));
+      body.hidden = false;
+      select(replays[0]);
+    }
+
+    async function boot() {
+      renderExperiments().catch((e) => {
+        document.getElementById('diversity-note').textContent = `Could not load learn.py runs: ${e.message}`;
+      });
+      renderReplays().catch((e) => {
+        document.getElementById('replay-note').textContent = `Could not load checkpoint replays: ${e.message}`;
+      });
+      try {
+        const data = await loadData();
+        if (!data.length) {
+          document.getElementById('no-data').style.display = 'block';
+          document.getElementById('charts-grid').style.display = 'none';
+          return;
+        }
+        renderSummary(data);
+        renderLoss(data);
+        renderWinRate(data);
+        renderBuffer(data);
+        renderChampion(data);
+      } catch (e) {
+        document.getElementById('no-data').style.display = 'block';
+        document.getElementById('no-data').textContent = `Error loading data: ${e.message}`;
+      }
+    }
+
+    boot();
+  </script>
+</body>
+</html>
