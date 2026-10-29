@@ -5,7 +5,8 @@ Output shape: (3, ROWS, COLS) = (3, 6, 7), dtype float32, no batch dimension.
   Channel 0: 1.0 where *token* pieces are, 0.0 elsewhere
   Channel 1: 1.0 where opponent pieces are, 0.0 elsewhere
   Channel 2: all 1.0 if token == AI, all 0.0 if token == HUMAN
-              (encodes whose turn it is so the network is turn-aware)
+              (whose colour is to move; colour-blind nets, the default,
+              ignore it: see network.py)
 """
 import torch
 from ..game.constants import ROWS, COLS, AI, HUMAN
