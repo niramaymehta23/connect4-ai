@@ -1,3 +1,4 @@
+import hashlib
 import random
 import unittest
 from unittest.mock import patch
@@ -73,3 +74,63 @@ class SelfPlayTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertIn(first, range(7))
         self.assertEqual(board, create_board())
+
+    def test_single_process_games_match_the_original_implementation(self):
+        from src.nn.self_play import generate_games
+        class Zero(torch.nn.Module):
+            def forward(self, x):
+                return torch.zeros((x.shape[0], 1))
+        state = random.getstate()
+        try:
+            random.seed(5)
+            samples = generate_games(Zero(), 'cpu', 2, 10, exploration_plies=4)
+        finally:
+            random.setstate(state)
+        # Recorded from generate_games before worker pools existed.
+        flat = repr([(s.to(torch.int8).flatten().tolist(), o) for s, o in samples])
+        self.assertEqual(len(samples), 49)
+        self.assertEqual(hashlib.sha256(flat.encode()).hexdigest()[:16], '886de9703b9e0de7')
+
+
+@unittest.skipIf(torch is None, 'PyTorch is optional for core tests')
+class WorkerPoolTests(unittest.TestCase):
+    """Spawned workers start slowly, so each test shares what it can."""
+
+    def setUp(self):
+        from src.nn.network import Connect4Net
+        torch.manual_seed(0)
+        self.net = Connect4Net().eval()
+
+    def test_parallel_games_are_seeded_per_game_and_returned_in_order(self):
+        from src.nn.self_play import generate_games, worker_pool, _play_game
+        with worker_pool(2) as pool:
+            first = generate_games(self.net, 'cpu', 3, 8, pool=pool, seed='23:1')
+            second = generate_games(self.net, 'cpu', 3, 8, pool=pool, seed='23:1')
+            other = generate_games(self.net, 'cpu', 3, 8, pool=pool, seed='23:2')
+        with worker_pool(3) as pool:
+            three_workers = generate_games(self.net, 'cpu', 3, 8, pool=pool, seed='23:1')
+        state = random.getstate()
+        try:
+            expected = []
+            for game in range(3):
+                random.seed(f'23:1:{game}')
+                expected += _play_game(self.net, torch.device('cpu'), 8, 8)
+        finally:
+            random.setstate(state)
+        as_lists = lambda samples: [(s.tolist(), o) for s, o in samples]
+        self.assertEqual(as_lists(first), as_lists(expected))
+        self.assertEqual(as_lists(second), as_lists(expected))
+        self.assertEqual(as_lists(three_workers), as_lists(expected))
+        self.assertNotEqual(as_lists(other), as_lists(expected))
+
+    def test_parallel_evaluation_plays_the_same_games(self):
+        from src.nn.self_play import make_nn_mcts_bot, worker_pool
+        from src.evaluation.compare import compare_on_openings
+        bot = make_nn_mcts_bot(self.net, torch.device('cpu'), iterations=8)
+        openings = [(3,), (2, 4)]
+        serial = compare_on_openings(bot, bot, openings, seed=7)
+        with worker_pool(2) as pool:
+            parallel = compare_on_openings(bot, bot, openings, seed=7, pool=pool)
+        games = lambda result: [(g['move_history'], g['winner'], g['seed']) for g in result['game_records']]
+        self.assertEqual(games(parallel), games(serial))
+        self.assertEqual(parallel['score_rate'], serial['score_rate'])

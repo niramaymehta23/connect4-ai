@@ -15,8 +15,10 @@ Key difference from Phase C rollout MCTS:
 
 All network calls are wrapped in torch.no_grad() as required.
 """
-import random
+import copy
 import math
+import pickle
+import random
 import torch
 
 from ..game.board import create_board, place, clone
@@ -110,7 +112,71 @@ def _run_nn_mcts(board, token, network, device, iterations, C=1.414, temperature
 # Public API
 # ---------------------------------------------------------------------------
 
-def generate_games(network, device, n_games, mcts_iterations, exploration_plies=8):
+def worker_pool(workers):
+    """
+    Return a `workers`-process pool for `generate_games` / `compare_on_openings`.
+
+    Spawned (not forked) so no torch or MPS state is inherited; each worker
+    runs on the CPU with one torch thread, so N workers use about N cores.
+    Close it when finished (or use it as a context manager).
+    """
+    import multiprocessing
+    return multiprocessing.get_context('spawn').Pool(workers, initializer=_init_worker)
+
+
+def _init_worker():
+    torch.set_num_threads(1)
+
+
+def _play_game(network, device, mcts_iterations, exploration_plies):
+    """Play one self-play game; return its (state_tensor, outcome) samples."""
+    board   = create_board()
+    current = AI          # AI always goes first in runner convention
+    history = []          # (state_tensor, move_token) accumulated during the game
+
+    while True:
+        # Record state *before* the move so we capture the position the
+        # player evaluated when deciding.
+        history.append((encode_board(board, current), current))
+
+        col = _run_nn_mcts(
+            board, current, network, device, mcts_iterations,
+            temperature=1.0 if len(history) <= exploration_plies else 0.0,
+        )
+        place(board, col, current)
+
+        if check_win(board, current):
+            winner = current
+            break
+        if is_full(board):
+            winner = None
+            break
+
+        current = _opp(current)
+
+    # Assign outcomes retroactively from each state's player's perspective.
+    samples = []
+    for tensor, move_token in history:
+        if winner is None:
+            outcome = 0.0
+        elif winner == move_token:
+            outcome = 1.0
+        else:
+            outcome = -1.0
+        samples.append((tensor, outcome))
+    return samples
+
+
+def _play_seeded_game(task):
+    """Worker entry point: plain pickles in and out, so no tensor travels via shared memory."""
+    network_bytes, mcts_iterations, exploration_plies, game_seed = task
+    random.seed(game_seed)
+    network = pickle.loads(network_bytes)
+    return pickle.dumps(_play_game(network, torch.device('cpu'), mcts_iterations, exploration_plies))
+
+
+def generate_games(network, device, n_games, mcts_iterations, exploration_plies=8,
+                   pool=None, seed=0):
     """
     Play `n_games` self-play games using network-backed MCTS for every move.
 
@@ -120,52 +186,37 @@ def generate_games(network, device, n_games, mcts_iterations, exploration_plies=
     device          : torch.device
     n_games         : int
     mcts_iterations : int — MCTS iterations per move
+    pool            : optional `worker_pool`; games then run in parallel on
+                      the CPU, game i seeded from (`seed`, i), so results do
+                      not depend on the number of workers. Without a pool,
+                      games share the caller's global `random` state.
 
     Returns
     -------
-    list of (state_tensor, outcome_float) pairs.
+    list of (state_tensor, outcome_float) pairs, in game order.
     state_tensor is shape (3, ROWS, COLS), float32.
     outcome_float is +1.0 (win), -1.0 (loss), 0.0 (draw)
     from the perspective of the player who was to move at that state.
     """
-    all_samples = []
+    if pool is None:
+        games = [_play_game(network, device, mcts_iterations, exploration_plies)
+                 for _ in range(n_games)]
+    else:
+        network_bytes = pickle.dumps(copy.deepcopy(network).cpu())
+        tasks = [(network_bytes, mcts_iterations, exploration_plies, f'{seed}:{game}')
+                 for game in range(n_games)]
+        games = [pickle.loads(result) for result in pool.map(_play_seeded_game, tasks, chunksize=1)]
+    return [sample for game in games for sample in game]
 
-    for _ in range(n_games):
-        board   = create_board()
-        current = AI          # AI always goes first in runner convention
-        history = []          # (state_tensor, move_token) accumulated during the game
 
-        while True:
-            # Record state *before* the move so we capture the position the
-            # player evaluated when deciding.
-            history.append((encode_board(board, current), current))
+class _NeuralMCTSBot:
+    """A class rather than a closure so evaluation games can be pickled to worker processes."""
 
-            col = _run_nn_mcts(
-                board, current, network, device, mcts_iterations,
-                temperature=1.0 if len(history) <= exploration_plies else 0.0,
-            )
-            place(board, col, current)
+    def __init__(self, network, device, iterations, C):
+        self.network, self.device, self.iterations, self.C = network, device, iterations, C
 
-            if check_win(board, current):
-                winner = current
-                break
-            if is_full(board):
-                winner = None
-                break
-
-            current = _opp(current)
-
-        # Assign outcomes retroactively from each state's player's perspective.
-        for tensor, move_token in history:
-            if winner is None:
-                outcome = 0.0
-            elif winner == move_token:
-                outcome = 1.0
-            else:
-                outcome = -1.0
-            all_samples.append((tensor, outcome))
-
-    return all_samples
+    def __call__(self, board, token):
+        return _run_nn_mcts(board, token, self.network, self.device, self.iterations, self.C)
 
 
 def make_nn_mcts_bot(network, device, iterations=200, C=1.414):
@@ -175,6 +226,4 @@ def make_nn_mcts_bot(network, device, iterations=200, C=1.414):
 
     Network should be in eval() mode before the returned bot is called.
     """
-    def bot(board, token):
-        return _run_nn_mcts(board, token, network, device, iterations, C)
-    return bot
+    return _NeuralMCTSBot(network, device, iterations, C)

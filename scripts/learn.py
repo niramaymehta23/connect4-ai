@@ -19,6 +19,8 @@ def main():
     p.add_argument('--steps', type=int, default=8)
     p.add_argument('--batch-size', type=int, default=32)
     p.add_argument('--eval-pairs', type=int, default=4)
+    p.add_argument('--workers', type=int, default=1,
+                   help='CPU processes for self-play and evaluation games; 1 keeps the original single-process run')
     p.add_argument('--seed', type=int, default=23)
     p.add_argument('--exploration-plies', type=int, default=8)
     p.add_argument('--device', choices=['cpu', 'mps', 'cuda'], default='cpu')
@@ -28,13 +30,17 @@ def main():
         p.error('run directory exists: use a new name to preserve the previous experiment')
     if min(args.iterations, args.games, args.simulations, args.steps, args.batch_size, args.eval_pairs) < 1:
         p.error('iteration, game, search, batch, step and evaluation counts must be positive')
+    if args.workers < 1:
+        p.error('workers must be positive')
+    if args.workers > 1 and args.device != 'cpu':
+        p.error('--workers runs games on the CPU; use --device cpu')
     if args.exploration_plies < 0:
         p.error('exploration plies cannot be negative')
 
     import torch
     from src.nn.network import Connect4Net
     from src.nn.replay import ReplayBuffer
-    from src.nn.self_play import generate_games, make_nn_mcts_bot
+    from src.nn.self_play import generate_games, make_nn_mcts_bot, worker_pool
     from src.evaluation.openings import generate_openings
     from src.evaluation.compare import compare_on_openings
 
@@ -52,10 +58,12 @@ def main():
     (args.run / 'config.json').write_text(json.dumps(config, indent=2))
     champion.save(args.run / 'champion.pt')
     history = []
+    pool = worker_pool(args.workers) if args.workers > 1 else None
     for iteration in range(1, args.iterations + 1):
         started = time.perf_counter()
         candidate.eval()
-        samples = generate_games(candidate, device, args.games, args.simulations, args.exploration_plies)
+        samples = generate_games(candidate, device, args.games, args.simulations, args.exploration_plies,
+                                 pool=pool, seed=f'{args.seed}:{iteration}')
         for state, outcome in samples:
             replay.push(state, outcome)
         candidate.train()
@@ -71,7 +79,7 @@ def main():
         evaluation = compare_on_openings(
             make_nn_mcts_bot(candidate, device, args.simulations),
             make_nn_mcts_bot(champion, device, args.simulations),
-            openings, seed=args.seed + 200_000,
+            openings, seed=args.seed + 200_000, pool=pool,
         )
         # A learning heuristic, not a statistical guarantee of improvement.
         promoted = evaluation['score_rate'] > 0.55
@@ -90,6 +98,9 @@ def main():
         (args.run / 'history.json').write_text(json.dumps(history, indent=2))
         print(f"Iteration {iteration}: {len(samples)} positions; loss {entry['mean_training_loss']:.4f}; "
               f"candidate score {evaluation['score_rate']:.1%}; promoted={promoted}", flush=True)
+    if pool is not None:
+        pool.close()
+        pool.join()
     print(f'Saved {args.run}. Use a separate seed/opening suite for final evaluation.')
 
 
