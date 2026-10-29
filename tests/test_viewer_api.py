@@ -4,6 +4,11 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+try:
+    import flask  # noqa: F401
+except ImportError:
+    raise unittest.SkipTest("Flask is optional for core tests")
+
 from src.viewer import server
 from src.viewer.analysis import heuristic_value_fn
 from src.game.rules import valid_cols
