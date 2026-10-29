@@ -22,7 +22,7 @@ def main():
     p.add_argument('--seed', type=int, default=23)
     p.add_argument('--exploration-plies', type=int, default=8)
     p.add_argument('--device', choices=['cpu', 'mps', 'cuda'], default='cpu')
-    p.add_argument('--checkpoint', type=Path, help='optional warm start; optimizer and replay start fresh')
+    p.add_argument('--checkpoint', type=Path, help='optional warm start; optimizer and replay start fresh (an older colour-aware checkpoint stays colour-aware)')
     args = p.parse_args()
     if args.run.exists():
         p.error('run directory exists: use a new name to preserve the previous experiment')
@@ -63,10 +63,10 @@ def main():
         for _ in range(args.steps):
             states, outcomes = replay.sample(args.batch_size)
             optimizer.zero_grad()
-            loss = torch.nn.functional.mse_loss(candidate(states.to(device)), outcomes.to(device))
+            loss, mse = candidate.training_losses(states.to(device), outcomes.to(device))
             loss.backward()
             optimizer.step()
-            losses.append(loss.item())
+            losses.append(mse.item())
         candidate.eval()
         evaluation = compare_on_openings(
             make_nn_mcts_bot(candidate, device, args.simulations),
