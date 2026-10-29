@@ -3,7 +3,7 @@ train_nn.py — Training loop for the Phase B neural network.
 
 Loop structure (per iteration):
   1. Self-play   : candidate network generates games → push to replay buffer
-  2. Train step  : sample buffer, gradient descent on MSE loss
+  2. Train step  : sample buffer, gradient descent on value cross-entropy (MSE logged)
   3. Evaluate    : every eval_every iters, candidate vs champion (50 games)
                    if win_rate > 0.55 → candidate becomes new champion
   4. Checkpoint  : every checkpoint_every iters → models/checkpoint_NNN.pt
@@ -17,7 +17,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import torch
-import torch.nn as nn
 
 from ..nn.network   import Connect4Net
 from ..nn.replay    import ReplayBuffer
@@ -134,19 +133,18 @@ def train_step(network, optimiser, buffer, batch_size, device):
 
     Returns
     -------
-    float — scalar MSE loss for this step
+    float — scalar MSE for this step (the optimised loss is cross-entropy)
     """
     states, outcomes = buffer.sample(batch_size)
     states   = states.to(device)
     outcomes = outcomes.to(device)
 
     optimiser.zero_grad()
-    predictions = network(states)               # (B, 1)
-    loss = nn.functional.mse_loss(predictions, outcomes)
+    loss, mse = network.training_losses(states, outcomes)
     loss.backward()
     optimiser.step()
 
-    return loss.item()
+    return mse.item()
 
 
 def evaluate(new_net, champion_net, device, n_games=50, iterations=200):
